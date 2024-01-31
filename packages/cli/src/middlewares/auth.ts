@@ -7,11 +7,12 @@ import { sync as globSync } from 'fast-glob';
 import type { JwtPayload } from '@/Interfaces';
 import type { AuthenticatedRequest } from '@/requests';
 import { AUTH_COOKIE_NAME, EDITOR_UI_DIST_DIR } from '@/constants';
-import { issueCookie, resolveJwtContent } from '@/auth/jwt';
+import { issueCookie, resolveJwtContent, viactSimulationResolveJwtContent } from '@/auth/jwt';
 import { canSkipAuth } from '@/decorators/registerController';
 import { Logger } from '@/Logger';
 import { JwtService } from '@/services/jwt.service';
 import config from '@/config';
+import { viactAuth } from './viact.auth';
 
 const jwtFromRequest = (req: Request) => {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -91,24 +92,34 @@ export const setupAuthMiddlewares = (
 	ignoredEndpoints: Readonly<string[]>,
 	restEndpoint: string,
 ) => {
-	app.use(userManagementJwtAuth());
+	// n8n Auth
+	// app.use(userManagementJwtAuth());
 
+	// app.use(async (req: Request, res: Response, next: NextFunction) => {
+	// 	if (
+	// 		// TODO: refactor me!!!
+	// 		// skip authentication for preflight requests
+	// 		req.method === 'OPTIONS' ||
+	// 		staticAssets.includes(req.url.slice(1)) ||
+	// 		canSkipAuth(req.method, req.path) ||
+	// 		isAuthExcluded(req.url, ignoredEndpoints) ||
+	// 		req.url.startsWith(`/${restEndpoint}/settings`) ||
+	// 		isPostInvitationAccept(req, restEndpoint)
+	// 	) {
+	// 		return next();
+	// 	}
+
+	// 	return passportMiddleware(req, res, next);
+	// });
+
+	// app.use(refreshExpiringCookie);
+
+	/** -------------------------------------------------------------------------------------------------------------- **/
+	// Viact Auth
 	app.use(async (req: Request, res: Response, next: NextFunction) => {
-		if (
-			// TODO: refactor me!!!
-			// skip authentication for preflight requests
-			req.method === 'OPTIONS' ||
-			staticAssets.includes(req.url.slice(1)) ||
-			canSkipAuth(req.method, req.path) ||
-			isAuthExcluded(req.url, ignoredEndpoints) ||
-			req.url.startsWith(`/${restEndpoint}/settings`) ||
-			isPostInvitationAccept(req, restEndpoint)
-		) {
-			return next();
-		}
+		const authz = await viactAuth(req, res);
+		req.user = await viactSimulationResolveJwtContent(authz)
+		return next();
+	})
 
-		return passportMiddleware(req, res, next);
-	});
-
-	app.use(refreshExpiringCookie);
 };

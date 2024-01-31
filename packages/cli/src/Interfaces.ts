@@ -731,3 +731,37 @@ export abstract class SecretsProvider {
 }
 
 export type N8nInstanceType = 'main' | 'webhook' | 'worker';
+
+export interface ViactUserInfo {
+	exp?: number;
+	iat?: number;
+	jti?: string;
+	iss?: string;
+	sub: string;
+	typ?: string;
+	azp?: string;
+	session_state?: string;
+	name: string;
+	given_name: string;
+	family_name: string;
+	preferred_username?: string;
+	email?: string;
+	email_verified?: boolean;
+	locale?: string;
+	acr?: string;
+	scope?: string;
+	sid?: string;
+	notification_type?: string;
+	role: string;
+	provider?: string;
+	phone?: string;
+	org_id?: string;
+	show_tour?: string;
+	created_at?: number;
+	company_code?: string;
+	org_role?: string;
+	client_id?: string;
+	username: string;
+	active?: boolean;
+	permissions?: any;
+}

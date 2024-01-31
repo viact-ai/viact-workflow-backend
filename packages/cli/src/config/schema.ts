@@ -21,6 +21,20 @@ convict.addFormat({
 });
 
 export const schema = {
+	viact: {
+		serviceAPIKey: {
+			doc: 'Internal Auth - SERVICE_API_KEY',
+			format: String,
+			default: '',
+			env: 'SERVICE_API_KEY',
+		},
+		umsServiceURL: {
+			doc: 'Internal Auth - UMS_SERVER_URL',
+			format: String,
+			default: '',
+			env: 'UMS_SERVER_URL',
+		},
+	},
 	database: {
 		type: {
 			doc: 'Type of database to use',

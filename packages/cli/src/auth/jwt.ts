@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 import { createHash } from 'crypto';
 import { AUTH_COOKIE_NAME, RESPONSE_ERROR_MESSAGES, Time } from '@/constants';
-import type { JwtPayload, JwtToken } from '@/Interfaces';
+import type { JwtPayload, JwtToken, ViactUserInfo } from '@/Interfaces';
 import type { User } from '@db/entities/User';
 import config from '@/config';
 import { License } from '@/License';
@@ -74,6 +74,38 @@ export async function resolveJwtContent(jwtPayload: JwtPayload): Promise<User> {
 		// won't have email nor password (both equals null)
 		throw new ApplicationError('Invalid token content');
 	}
+	return user;
+}
+
+export async function viactSimulationResolveJwtContent(
+	viactUserInfo: ViactUserInfo,
+): Promise<User> {
+	const user: any = await Container.get(UserRepository).findOne({
+		where: {},
+	});
+
+	let passwordHash = null;
+	if (user?.password) {
+		passwordHash = createPasswordSha(user);
+	}
+
+	// currently only LDAP users during synchronization
+	// can be set to disabled
+	if (user?.disabled) {
+		throw new AuthError('Unauthorized');
+	}
+
+	// if (!user || jwtPayload.password !== passwordHash || user.email !== jwtPayload.email) {
+	// 	// When owner hasn't been set up, the default user
+	// 	// won't have email nor password (both equals null)
+	// 	throw new ApplicationError('Invalid token content');
+	// }
+	if (!user) {
+		// When owner hasn't been set up, the default user
+		// won't have email nor password (both equals null)
+		throw new ApplicationError('Invalid token content');
+	}
+	user.viactUser = viactUserInfo;
 	return user;
 }
 

@@ -41,6 +41,15 @@ export class AuthController {
 	/**
 	 * Log in a user.
 	 */
+	@Authorized()
+	@Post('/viact-auth')
+	async viactLogin(req: Request) {
+		return { user: req.user };
+	}
+
+	/**
+	 * Log in a user.
+	 */
 	@Post('/login')
 	async login(req: LoginRequest, res: Response): Promise<PublicUser | undefined> {
 		const { email, password, mfaToken, mfaRecoveryCode } = req.body;
