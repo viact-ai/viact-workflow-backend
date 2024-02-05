@@ -34,6 +34,12 @@ export const schema = {
 			default: '',
 			env: 'UMS_SERVER_URL',
 		},
+		isDeveloped: {
+			doc: 'For Viact Devlop - IS_DEVELOPED',
+			format: Boolean,
+			default: false,
+			env: 'IS_DEVELOPED',
+		},
 	},
 	database: {
 		type: {

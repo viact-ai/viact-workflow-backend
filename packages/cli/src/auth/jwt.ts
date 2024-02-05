@@ -78,7 +78,7 @@ export async function resolveJwtContent(jwtPayload: JwtPayload): Promise<User> {
 }
 
 export async function viactSimulationResolveJwtContent(
-	viactUserInfo: ViactUserInfo,
+	viactUserInfo: ViactUserInfo | {},
 ): Promise<User> {
 	const user: any = await Container.get(UserRepository).findOne({
 		where: {},

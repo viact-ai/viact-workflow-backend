@@ -117,6 +117,10 @@ export const setupAuthMiddlewares = (
 	/** -------------------------------------------------------------------------------------------------------------- **/
 	// Viact Auth
 	app.use(async (req: Request, res: Response, next: NextFunction) => {
+		if (config.get('viact.isDeveloped') === true) {
+			req.user = await viactSimulationResolveJwtContent({})
+			return next();
+		}
 		const authz = await viactAuth(req, res);
 		req.user = await viactSimulationResolveJwtContent(authz)
 		return next();
